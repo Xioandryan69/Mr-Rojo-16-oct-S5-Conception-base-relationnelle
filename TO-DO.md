@@ -56,6 +56,13 @@ SELECT nom_plat,categorie_plat,prix_plat FROM gargote_plats ORDER BY prix_plat D
 
 
 ## etape 2 
+``` txt 
+« Je range mes plats par catégorie : plats malagasy, plats chinois, soupes, desserts, boissons. »
+Travail. La table des plats contient déjà des données. Ajoutez la catégorie sans perdre ces données, puis
+rendez-la obligatoire. Vérification : nombre de plats par catégorie, y compris les catégories sans plat.
+Piège. Pourquoi ne pas simplement ajouter une colonne categorie VARCHAR(50) dans la table des
+plats ? Donnez un exemple de problème concret.
+```
 
 ``` SQL 
 
@@ -90,4 +97,38 @@ ALTER TABLE gargote_plats DROP COLUMN categorie_plat;
 ALTER TABLE Gargote_plats ADD CONSTRAINT fk_Carargote_plats  FOREIGN KEY (id_categorie_plat) REFERENCES Gargote_categorie_plats(id) ON DELETE CASCADE ;
 
 ```
+
+## Etape 3 
+
+``` txt 
+« J'enregistre les commandes : la date, quels plats, et combien de chaque. »
+Travail. Une commande contient plusieurs plats, et un plat apparaît dans plusieurs commandes.
+Vérification : montant total de chaque commande.
+Piège. Où placez-vous la quantité
+```
+
+``` SQL 
+
+-- Active: 1792133652074@@127.0.0.1@5432@gargote@public
+CREATE TABLE CommandeMere 
+(
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    date_commande DATE NOT NULL
+
+);
+
+CREATE TABLE CommandeFille
+(
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_commande_mere INTEGER NOT NULL,
+    id_plat INTEGER NOT NULL,
+    quantite INTEGER NOT NULL CHECK (quantite > 0),
+    CONSTRAINT fk_CommandeFille_CommandeMere FOREIGN KEY (id_commande_mere) REFERENCES CommandeMere(id) ON DELETE CASCADE,
+    CONSTRAINT fk_CommandeFille_Gargote_plats FOREIGN KEY (id_plat) REFERENCES Gargote_plats(id) ON DELETE CASCADE
+);
+
+
+
+```
+
 
