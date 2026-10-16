@@ -1,14 +1,8 @@
+# Conception de la base de donnée
 
-
-# Conception de la base de donnée 
-
-
-## Etape 1 
-
-
+## Etape 1
 
 `Gargote_Plats`(**id**,`nom_plat`,`prix_plat`,`categorie_plat`)
-
 
 ```SQL
 CREATE TABLE Gargote_plats
@@ -47,16 +41,13 @@ SELECT nom_plat,  categorie_plat,prix_plat FROM gargote_plats ORDER BY prix_plat
 -- ajouter tri 
 
 SELECT nom_plat,categorie_plat,prix_plat FROM gargote_plats ORDER BY prix_plat DESC;
-
-
 ```
 
+-- piege categorie on peut ecrire n importe quelle categorie q on veut
 
--- piege categorie on peut ecrire n importe quelle categorie q on veut 
+## etape 2
 
-
-## etape 2 
-``` txt 
+```txt
 « Je range mes plats par catégorie : plats malagasy, plats chinois, soupes, desserts, boissons. »
 Travail. La table des plats contient déjà des données. Ajoutez la catégorie sans perdre ces données, puis
 rendez-la obligatoire. Vérification : nombre de plats par catégorie, y compris les catégories sans plat.
@@ -64,7 +55,7 @@ Piège. Pourquoi ne pas simplement ajouter une colonne categorie VARCHAR(50) dan
 plats ? Donnez un exemple de problème concret.
 ```
 
-``` SQL 
+```SQL
 
 -- Active: 1792133652074@@127.0.0.1@5432@gargote@public
 CREATE TABLE Gargote_categorie_plats
@@ -95,19 +86,18 @@ UPDATE gargote_plats SET id_categorie_plat = (SELECT id FROM gargote_categorie_p
 ALTER TABLE gargote_plats DROP COLUMN categorie_plat;
 -- constrainte 
 ALTER TABLE Gargote_plats ADD CONSTRAINT fk_Carargote_plats  FOREIGN KEY (id_categorie_plat) REFERENCES Gargote_categorie_plats(id) ON DELETE CASCADE ;
-
 ```
 
-## Etape 3 
+## Etape 3
 
-``` txt 
+```txt
 « J'enregistre les commandes : la date, quels plats, et combien de chaque. »
 Travail. Une commande contient plusieurs plats, et un plat apparaît dans plusieurs commandes.
 Vérification : montant total de chaque commande.
 Piège. Où placez-vous la quantité
 ```
 
-``` SQL 
+```SQL
 
 -- Active: 1792133652074@@127.0.0.1@5432@gargote@public
 CREATE TABLE CommandeMere 
@@ -126,9 +116,36 @@ CREATE TABLE CommandeFille
     CONSTRAINT fk_CommandeFille_CommandeMere FOREIGN KEY (id_commande_mere) REFERENCES CommandeMere(id) ON DELETE CASCADE,
     CONSTRAINT fk_CommandeFille_Gargote_plats FOREIGN KEY (id_plat) REFERENCES Gargote_plats(id) ON DELETE CASCADE
 );
-
-
-
 ```
 
+## Etape 4
 
+```SQL
+-- Active: 1792133652074@@127.0.0.1@5432@gargote@public
+CREATE TABLE Client(
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nom_client VARCHAR(50) NOT NULL DEFAULT 'Client de passage'
+);
+
+-- ajouter la colonne id_client a la table CommandeMere
+ALTER TABLE commandemere ADD COLUMN id_client INTEGER;
+-- ajouter la contrainte de clé étrangère entre CommandeMere et Client
+ALTER TABLE commandemere ADD CONSTRAINT fk_CommandeMere_Client FOREIGN KEY (id_client) REFERENCES Client(id) ON DELETE CASCADE;
+
+-- ajouter des commandes meres avec des clients 
+
+INSERT INTO Client(nom_client) VALUES 
+('Andrianandrainy'),('Rasoa'),('Rakoto'),('Rabe'),('Rasoa');
+
+
+-- ajouter des commandes meres avec des clients
+INSERT INTO CommandeMere(date_commande, id_client) VALUES
+('2023-01-01', 1);
+
+-- ajouter des commandes filles pour la commande mere avec id 1
+INSERT INTO CommandeFille(id_commande_mere, id_plat, quantite) VALUES
+(1, 1, 2),
+(1, 2, 1),
+(1, 3, 3);
+-- jointure pour ne pas perde aucun donnee  commande avec les commandes filles et les clients
+```
