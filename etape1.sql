@@ -1,55 +1,43 @@
--- Active: 1792133652074@@127.0.0.1@5432@gargotte
-CREATE DATABASE  gargotte;
+-- Active: 1792133652074@@127.0.0.1@5432@gargote@public
+/\c gargote;
 
-\c gargotte;
+-- Etape 1 : Creation du premier table 
 
--- Database Postgres 
+--liste des plats 
 
--- Gargotte 
-CREATE TABLE Gargotte 
+CREATE TABLE Gargote_plats
 (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    lieu VARCHAR(150),
-    nom VARCHAR(150)
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
+    nom_plat VARCHAR(50) NOT NULL,
+    prix_plat INTEGER NOT NULL CHECK (prix_plat > 0),
+    categorie_plat VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Gargotte(lieu,nom) VALUES ('Antananrivo','Gargotte de rado ');
-
--- Salle 
-CREATE TABLE Salle
+INSERT INTO  Gargote_Plats(nom_plat,  categorie_plat,prix_plat) VALUES 
 (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombrePlace  NUMERIC(8,2)
-);  
+    'Romazava','Plat malagasy',7000),
+    ('Ravitoto sy henakisoa','Plat malagasy',8000),
+    ('Akoho sy voanio','Plat malagasy',8500),
+
+    ('Mi Sao','Plat Chinois',6000),
+
+    ('Soupe Chinoise','Soupe',5000),
+
+    ('Mofo gasy (les 4)','Dessert et gouter',1000),
+
+    ('Ranon ampango','Boisson',500);
 
 
-INSERT INTO Salle(nombrePlace) VALUES (8);
 
---Salle Gargotte 
-CREATE TABLE SalleGargotte 
-(
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    idSalle INT ,
-    idGargotte INT , 
-    CONSTRAINT fk_SalleGargotte_Salle FOREIGN KEY (idSalle) REFERENCES Salle(id) ON DELETE CASCADE,
-    CONSTRAINT fk_SalleGargotte_Gargotte FOREIGN KEY (idGargotte) REFERENCES Gargotte(id) ON DELETE CASCADE 
-);
 
-INSERT INTO SalleGargotte(idSalle,idGargotte) VALUES (1,1);
 
-CREATE TABLE Personnel 
-( 
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    role VARCHAR(150) CHECK (role IN ('cuisinier','serveur','employe','gerant')),
-    idGargotte INT ,
-    nom VARCHAR(150),
-    prenom VARCHAR(150),
-    CONSTRAINT fk_Personnel_Gargotte FOREIGN KEY (idGargotte) REFERENCES Gargotte(id) ON DELETE CASCADE
-);
 
-INSERT INTO Personnel(role,idGargotte,nom,prenom) VALUES ('cuisinier',1,'Rado','Rado');
-INSERT INTO Personnel(role,idGargotte,nom,prenom) VALUES ('serveur',1,'Rado','Rado');
+-- lister les plats avec leurs prix 
+SELECT nom_plat,  categorie_plat,prix_plat FROM gargote_plats ORDER BY prix_plat,nom_plat;
 
-INSERT INTO Personnel(role,idGargotte,nom,prenom) VALUES ('employe',1,'Rado','Rado');
+
+-- ajouter tri 
+
+SELECT nom_plat,categorie_plat,prix_plat FROM gargote_plats ORDER BY prix_plat DESC;
 
 
